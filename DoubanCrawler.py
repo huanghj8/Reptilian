@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import codecs
 import csv
+import sys
 
 from bs4 import BeautifulSoup
 
 import expanddouban
-import sys
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
 # 任務1：定義getMovieUrl函數，參數為分類和地區，輸出對應的url
-def getMovieUrl(category='剧情', location='美国'):
+def get_movie_url(category='剧情', location='美国'):
     root_url = 'https://movie.douban.com/tag/#/?sort=S&range=9,10&tags=电影'
     url = root_url + ',' + category + ',' + location
     return url
@@ -21,7 +23,7 @@ def getMovieUrl(category='剧情', location='美国'):
 
 
 def get_html(category, location):
-    html = expanddouban.getHtml(getMovieUrl(category, location), loadmore=False, waittime=1)
+    html = expanddouban.getHtml(get_movie_url(category, location), loadmore=False, waittime=1)
     return html
 
 
@@ -41,32 +43,32 @@ class Movie:
 
 
 # 任務4：定義getMovies函數，參數為類型和地區，輸出對應的電影信息列表
-def getMovies(category, location_list):
+def get_movies(category, location_list):
     movies = []
     for location in location_list:
         soup = BeautifulSoup(get_html(category, location), 'html.parser')
         content_a = soup.find(id='content').find(class_='list-wp').find_all('a', recursive=False)
         for element in content_a:
-            M_name = element.find(class_='title').string
-            M_rate = element.find(class_='rate').string
-            M_location = location
-            M_category = category
-            M_info_link = element.get('href')
-            M_cover_link = element.find('img').get('src')
-            movies.append(Movie(M_name, M_rate, M_location, M_category, M_info_link, M_cover_link).print_movie())
+            m_name = element.find(class_='title').string
+            m_rate = element.find(class_='rate').string
+            m_location = location
+            m_category = category
+            m_info_link = element.get('href')
+            m_cover_link = element.find('img').get('src')
+            movies.append(Movie(m_name, m_rate, m_location, m_category, m_info_link, m_cover_link).print_movie())
     return movies
 
 
 # 任務5：選擇三個電影類型，獲取所有電影信息，輸出到文件movies.csv
 category_list = ['武侠', '灾难', '西部']
-# location_list = ['中国大陆', '美国', '香港', '台湾', '日本', '韩国', '英国', '法国', '德国', '意大利', '西班牙', '印度', '泰国', '俄罗斯', '伊朗', '加拿大',
-#                  '澳大利亚', '爱尔兰', '瑞典', '巴西', '丹麦']
+# location_list = ['中国大陆', '美国', '香港', '台湾', '日本', '韩国', '英国', '法国', '德国', '意大利', '西班牙',
+#  '印度', '泰国', '俄罗斯', '伊朗', '加拿大','澳大利亚', '爱尔兰', '瑞典', '巴西', '丹麦']
 location_list = ['美国']
-my_list1 = getMovies('剧情', location_list)
+my_list1 = get_movies('剧情', location_list)
 
 # my_list1 = getMovies('武侠', location_list)
-my_list2 = getMovies('战争', location_list)
-my_list3 = getMovies('爱情', location_list)
+my_list2 = get_movies('战争', location_list)
+my_list3 = get_movies('爱情', location_list)
 
 f = codecs.open('movies.csv', 'w', 'utf_8_sig')
 writer = csv.writer(f)
@@ -78,8 +80,9 @@ f.close()
 
 # # 任務6：將每個電影類別按地區電影數量排序，前三名的地區是哪些，佔比多少，結果輸出到文件output.txt
 # def putMax(mylist, location = ""):
-#     input_dict = {'中国大陆': 0, '美国': 0, '香港': 0, '台湾': 0, '日本': 0, '韩国': 0, '英国': 0, '法国': 0, '德国': 0, '意大利': 0, '西班牙': 0,
-#                   '印度': 0, '泰国': 0, '俄罗斯': 0, '伊朗': 0, '加拿大': 0, '澳大利亚': 0, '爱尔兰': 0, '瑞典': 0, '巴西': 0, '丹麦': 0}
+#     input_dict = {'中国大陆': 0, '美国': 0, '香港': 0, '台湾': 0, '日本': 0, '韩国': 0, '英国': 0, '法国': 0,
+# '德国': 0, '意大利': 0, '西班牙': 0,
+# '印度': 0, '泰国': 0, '俄罗斯': 0, '伊朗': 0, '加拿大': 0, '澳大利亚': 0, '爱尔兰': 0, '瑞典': 0, '巴西': 0, '丹麦': 0}
 #     total = 0
 #     for movie in mylist:
 #         if location in movie:
